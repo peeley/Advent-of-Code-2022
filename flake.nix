@@ -9,12 +9,13 @@
       let
         pkgs = import nixpkgs { inherit system; };
         elixir = pkgs.beam.packages.erlang.elixir;
-        elixir-ls = pkgs.beam.packages.erlang.elixir-ls;
+        elixir-ls = pkgs.beam.packages.erlang.elixir_ls;
         locales = pkgs.glibcLocales;
       in {
         devShell = pkgs.mkShell {
           buildInputs = [
             elixir
+            elixir-ls
             locales
           ];
         };
