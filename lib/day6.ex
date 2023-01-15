@@ -5,10 +5,10 @@ defmodule Advent2022.Day6 do
     data
   end
 
-  def part1 do
-    {_, ans} = input()
+  def get_idx_of_unique_group(ungrouped_chars, group_size) do
+    {_, ans} = ungrouped_chars
     |> String.split("", trim: true)
-    |> Enum.chunk_every(4, 1)
+    |> Enum.chunk_every(group_size, 1)
     |> Enum.map(&Enum.frequencies/1)
     |> Enum.with_index()
     |> Enum.filter(fn {char_freqs, _idx} ->
@@ -16,7 +16,16 @@ defmodule Advent2022.Day6 do
     end)
     |> List.first
 
-    # since the first group is technically four chars in
-    ans + 4
+    ans + group_size
+  end
+
+  def part1 do
+    input()
+    |> get_idx_of_unique_group(4)
+  end
+
+  def part2 do
+    input()
+    |> get_idx_of_unique_group(14)
   end
 end
