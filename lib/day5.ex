@@ -64,9 +64,17 @@ defmodule Advent2022.Day5 do
     end)
   end
 
-  def perform_instruction_on_stack(instruction, stacks) do
+  def perform_instruction_on_stack(instruction, stacks, opts \\ [reverse_stacking?: false]) do
     [amount, start_pos, end_pos] = instruction
-    moved_letters = Enum.take(stacks[start_pos], amount) |> Enum.reverse()
+
+    moved_letters = Enum.take(stacks[start_pos], amount)
+    |> then(fn moved ->
+      if opts[:reverse_stacking?] do
+        Enum.reverse(moved)
+      else
+        moved
+      end
+    end)
 
     stacks
     |> Map.update(start_pos, stacks[start_pos], &(Enum.drop(&1, amount)))
@@ -80,6 +88,28 @@ defmodule Advent2022.Day5 do
     parsed_stacks = parse_stacks(stacks)
     parsed_instructions = parse_instructions(instructions)
 
-    Enum.reduce(parsed_instructions, parsed_stacks, &perform_instruction_on_stack/2)
+    Enum.reduce(
+      parsed_instructions,
+      parsed_stacks,
+      &(perform_instruction_on_stack(&1, &2, [reverse_stacking?: true]))
+    )
+    |> Enum.map(fn {key, val} -> {key, List.first(val)} end)
+    |> Enum.sort_by(fn {key, _val} -> key end)
+    |> Enum.reduce("", fn {_key, val}, acc -> acc <> val end)
+  end
+
+  def part2 do
+    [stacks, instructions] = input()
+    parsed_stacks = parse_stacks(stacks)
+    parsed_instructions = parse_instructions(instructions)
+
+    Enum.reduce(
+      parsed_instructions,
+      parsed_stacks,
+      &perform_instruction_on_stack/2
+    )
+    |> Enum.map(fn {key, val} -> {key, List.first(val)} end)
+    |> Enum.sort_by(fn {key, _val} -> key end)
+    |> Enum.reduce("", fn {_key, val}, acc -> acc <> val end)
   end
 end
